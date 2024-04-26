@@ -39,27 +39,4 @@ public class UserService {
     public List<User> findAll() {
         return userRepository.findAll();
     }
-
-    private void sendActivationEmail(User user) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("no-reply@app.com");
-        message.setTo(user.getEmail());
-        message.setSubject("Account activation");
-        message.setText("http://localhost:5173/activation/" + user.getActivationToken());
-
-        getJavaMailSender().send(message);
-    }
-
-    public JavaMailSender getJavaMailSender() {
-        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost("smtp.ethereal.email");
-        mailSender.setPort(587);
-
-        mailSender.setUsername("juwan46@ethereal.email");
-        mailSender.setPassword("SZeMu1bCxTsRESADte");
-
-        Properties props = mailSender.getJavaMailProperties();
-        props.put("mail.smtp.starttls.enable", "true");
-        return mailSender;
-    }
 }
