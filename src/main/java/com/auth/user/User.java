@@ -1,6 +1,6 @@
 package com.auth.user;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,14 +15,11 @@ public class User {
     @Id
     @GeneratedValue
     private long id;
-
     private String username;
-
     private String email;
-
+    @JsonIgnore
     private String password;
-
     private boolean active = false;
-
     private String activationToken;
+    private String image;
 }

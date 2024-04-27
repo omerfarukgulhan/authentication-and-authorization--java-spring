@@ -3,18 +3,23 @@ package com.auth.user;
 
 import com.auth.error.ApiError;
 import com.auth.user.dto.UserCreate;
+import com.auth.user.dto.UserProjection;
+import com.auth.user.exception.ActivationNotificationException;
+import com.auth.user.exception.InvalidTokenException;
 import com.auth.user.exception.NotUniqueEmailException;
 import com.auth.utils.ApiResponse;
+import com.auth.utils.GenericMessage;
 import com.auth.utils.Messages;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController()
@@ -27,18 +32,24 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping
+    public Page<UserProjection> getUsers(Pageable page) {
+        return userService.getUsers(page);
+    }
+
     @PostMapping
-    ApiResponse<User> createUser(@Valid @RequestBody UserCreate user) {
+    ApiResponse<UserCreate> createUser(@Valid @RequestBody UserCreate user) {
         userService.save(user.toUser());
         String message = Messages.getMessageForLocale("auth.create.user.success.message", LocaleContextHolder.getLocale());
-        return new ApiResponse<>("success", message, user.toUser());
+        return new ApiResponse<>("success", message, user);
     }
 
-    @GetMapping
-    public List<User> getUsers() {
-        return userService.findAll();
+    @PatchMapping("/{token}/active")
+    GenericMessage activateUser(@PathVariable String token) {
+        userService.activateUser(token);
+        String message = Messages.getMessageForLocale("auth.activate.user.success.message", LocaleContextHolder.getLocale());
+        return new GenericMessage(message);
     }
-
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     ResponseEntity<ApiError> handleMethodArgNotValidEx(MethodArgumentNotValidException exception) {
@@ -59,6 +70,24 @@ public class UserController {
         apiError.setMessage(exception.getMessage());
         apiError.setStatus(400);
         apiError.setValidationErrors(exception.getValidationErrors());
-        return ResponseEntity.badRequest().body(apiError);
+        return ResponseEntity.status(400).body(apiError);
+    }
+
+    @ExceptionHandler(ActivationNotificationException.class)
+    ResponseEntity<ApiError> handleActivationNotificationException(ActivationNotificationException exception) {
+        ApiError apiError = new ApiError();
+        apiError.setPath("/api/v1/users");
+        apiError.setMessage(exception.getMessage());
+        apiError.setStatus(502);
+        return ResponseEntity.status(502).body(apiError);
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    ResponseEntity<ApiError> handleInvalidTokenException(InvalidTokenException exception) {
+        ApiError apiError = new ApiError();
+        apiError.setPath("/api/v1/users");
+        apiError.setMessage(exception.getMessage());
+        apiError.setStatus(400);
+        return ResponseEntity.status(400).body(apiError);
     }
 }
