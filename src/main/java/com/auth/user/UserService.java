@@ -1,9 +1,9 @@
 package com.auth.user;
 
 import com.auth.email.EmailService;
-import com.auth.user.dto.UserProjection;
 import com.auth.user.exception.ActivationNotificationException;
 import com.auth.user.exception.InvalidTokenException;
+import com.auth.user.exception.NotFoundException;
 import com.auth.user.exception.NotUniqueEmailException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +29,12 @@ public class UserService {
         this.emailService = emailService;
     }
 
-    public Page<UserProjection> getUsers(Pageable page) {
-        return userRepository.getAllUserRecords(page);
+    public Page<User> getUsers(Pageable page) {
+        return userRepository.findAll(page);
+    }
+
+    public User getUser(long id) {
+        return userRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
     }
 
     @Transactional(rollbackOn = MailException.class)

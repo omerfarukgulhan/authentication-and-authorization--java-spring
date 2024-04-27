@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Data
-@ConfigurationProperties(prefix = "auth")
+@ConfigurationProperties(prefix = "auth-env")
 @Configuration
 public class AuthProperties {
     private Email email;

@@ -3,13 +3,16 @@ package com.auth.user;
 
 import com.auth.error.ApiError;
 import com.auth.user.dto.UserCreate;
-import com.auth.user.dto.UserProjection;
+import com.auth.user.dto.UserDTO;
 import com.auth.user.exception.ActivationNotificationException;
 import com.auth.user.exception.InvalidTokenException;
+import com.auth.user.exception.NotFoundException;
 import com.auth.user.exception.NotUniqueEmailException;
 import com.auth.utils.ApiResponse;
 import com.auth.utils.GenericMessage;
 import com.auth.utils.Messages;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -33,26 +36,33 @@ public class UserController {
     }
 
     @GetMapping
-    public Page<UserProjection> getUsers(Pageable page) {
-        return userService.getUsers(page);
+    public Page<UserDTO> getUsers(Pageable page){
+        return userService.getUsers(page).map(UserDTO::new);
     }
 
+    @GetMapping("/{id}")
+    public UserDTO getUser(@PathVariable long id){
+        return new UserDTO(userService.getUser(id));
+    }
+
+
+
     @PostMapping
-    ApiResponse<UserCreate> createUser(@Valid @RequestBody UserCreate user) {
+    public ApiResponse<UserCreate> createUser(@Valid @RequestBody UserCreate user) {
         userService.save(user.toUser());
         String message = Messages.getMessageForLocale("auth.create.user.success.message", LocaleContextHolder.getLocale());
         return new ApiResponse<>("success", message, user);
     }
 
     @PatchMapping("/{token}/active")
-    GenericMessage activateUser(@PathVariable String token) {
+    public GenericMessage activateUser(@PathVariable String token) {
         userService.activateUser(token);
         String message = Messages.getMessageForLocale("auth.activate.user.success.message", LocaleContextHolder.getLocale());
         return new GenericMessage(message);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    ResponseEntity<ApiError> handleMethodArgNotValidEx(MethodArgumentNotValidException exception) {
+    public ResponseEntity<ApiError> handleMethodArgNotValidEx(MethodArgumentNotValidException exception) {
         ApiError apiError = new ApiError();
         apiError.setPath("/api/v1/users");
         String message = Messages.getMessageForLocale("auth.error.validation", LocaleContextHolder.getLocale());
@@ -64,7 +74,7 @@ public class UserController {
     }
 
     @ExceptionHandler(NotUniqueEmailException.class)
-    ResponseEntity<ApiError> handleNotUniqueEmailEx(NotUniqueEmailException exception) {
+    public ResponseEntity<ApiError> handleNotUniqueEmailEx(NotUniqueEmailException exception) {
         ApiError apiError = new ApiError();
         apiError.setPath("/api/v1/users");
         apiError.setMessage(exception.getMessage());
@@ -74,7 +84,7 @@ public class UserController {
     }
 
     @ExceptionHandler(ActivationNotificationException.class)
-    ResponseEntity<ApiError> handleActivationNotificationException(ActivationNotificationException exception) {
+    public ResponseEntity<ApiError> handleActivationNotificationException(ActivationNotificationException exception) {
         ApiError apiError = new ApiError();
         apiError.setPath("/api/v1/users");
         apiError.setMessage(exception.getMessage());
@@ -83,11 +93,20 @@ public class UserController {
     }
 
     @ExceptionHandler(InvalidTokenException.class)
-    ResponseEntity<ApiError> handleInvalidTokenException(InvalidTokenException exception) {
+    public ResponseEntity<ApiError> handleInvalidTokenException(InvalidTokenException exception, HttpServletRequest request){
         ApiError apiError = new ApiError();
         apiError.setPath("/api/v1/users");
         apiError.setMessage(exception.getMessage());
         apiError.setStatus(400);
         return ResponseEntity.status(400).body(apiError);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    ResponseEntity<ApiError> handleNotFoundException(NotFoundException exception, HttpServletRequest request){
+        ApiError apiError = new ApiError();
+        apiError.setPath(request.getRequestURI());
+        apiError.setMessage(exception.getMessage());
+        apiError.setStatus(404);
+        return ResponseEntity.status(404).body(apiError);
     }
 }
