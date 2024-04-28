@@ -1,4 +1,4 @@
-package com.auth.error;
+package com.server.error;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;

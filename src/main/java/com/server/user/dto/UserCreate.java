@@ -1,7 +1,7 @@
-package com.auth.user.dto;
+package com.server.user.dto;
 
-import com.auth.user.User;
-import com.auth.user.validation.UniqueEmail;
+import com.server.user.User;
+import com.server.user.validation.UniqueEmail;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

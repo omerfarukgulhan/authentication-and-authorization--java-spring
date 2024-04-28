@@ -1,4 +1,4 @@
-package com.auth.config;
+package com.server.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

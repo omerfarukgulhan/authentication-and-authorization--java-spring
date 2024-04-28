@@ -1,7 +1,7 @@
-package com.auth.user.validation;
+package com.server.user.validation;
 
-import com.auth.user.User;
-import com.auth.user.UserRepository;
+import com.server.user.User;
+import com.server.user.UserRepository;
 import jakarta.validation.ConstraintValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 

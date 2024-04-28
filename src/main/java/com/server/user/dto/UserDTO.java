@@ -1,6 +1,6 @@
-package com.auth.user.dto;
+package com.server.user.dto;
 
-import com.auth.user.User;
+import com.server.user.User;
 import lombok.Data;
 
 @Data

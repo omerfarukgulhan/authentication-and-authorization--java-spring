@@ -1,17 +1,16 @@
-package com.auth.user;
+package com.server.user;
 
 
-import com.auth.error.ApiError;
-import com.auth.user.dto.UserCreate;
-import com.auth.user.dto.UserDTO;
-import com.auth.user.exception.ActivationNotificationException;
-import com.auth.user.exception.InvalidTokenException;
-import com.auth.user.exception.NotFoundException;
-import com.auth.user.exception.NotUniqueEmailException;
-import com.auth.utils.ApiResponse;
-import com.auth.utils.GenericMessage;
-import com.auth.utils.Messages;
-import jakarta.persistence.EntityNotFoundException;
+import com.server.error.ApiError;
+import com.server.user.dto.UserCreate;
+import com.server.user.dto.UserDTO;
+import com.server.user.exception.ActivationNotificationException;
+import com.server.user.exception.InvalidTokenException;
+import com.server.user.exception.NotFoundException;
+import com.server.user.exception.NotUniqueEmailException;
+import com.server.utils.ApiResponse;
+import com.server.utils.GenericMessage;
+import com.server.utils.Messages;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

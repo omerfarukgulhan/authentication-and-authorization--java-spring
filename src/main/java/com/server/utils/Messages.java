@@ -1,4 +1,4 @@
-package com.auth.utils;
+package com.server.utils;
 
 import java.text.MessageFormat;
 import java.util.Locale;

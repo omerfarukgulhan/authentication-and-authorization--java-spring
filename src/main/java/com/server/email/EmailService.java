@@ -1,6 +1,6 @@
-package com.auth.email;
+package com.server.email;
 
-import com.auth.config.AuthProperties;
+import com.server.config.AuthProperties;
 import jakarta.annotation.PostConstruct;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;

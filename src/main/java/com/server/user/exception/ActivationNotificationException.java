@@ -1,6 +1,6 @@
-package com.auth.user.exception;
+package com.server.user.exception;
 
-import com.auth.utils.Messages;
+import com.server.utils.Messages;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 public class ActivationNotificationException extends RuntimeException {

@@ -1,10 +1,10 @@
-package com.auth.user;
+package com.server.user;
 
-import com.auth.email.EmailService;
-import com.auth.user.exception.ActivationNotificationException;
-import com.auth.user.exception.InvalidTokenException;
-import com.auth.user.exception.NotFoundException;
-import com.auth.user.exception.NotUniqueEmailException;
+import com.server.email.EmailService;
+import com.server.user.exception.ActivationNotificationException;
+import com.server.user.exception.InvalidTokenException;
+import com.server.user.exception.NotFoundException;
+import com.server.user.exception.NotUniqueEmailException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;

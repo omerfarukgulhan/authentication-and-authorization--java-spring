@@ -1,4 +1,4 @@
-package com.auth.user;
+package com.server.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

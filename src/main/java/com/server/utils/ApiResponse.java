@@ -1,4 +1,4 @@
-package com.auth.utils;
+package com.server.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
