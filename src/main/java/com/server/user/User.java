@@ -15,11 +15,19 @@ public class User {
     @Id
     @GeneratedValue
     private long id;
+
     private String username;
+
     private String email;
+
     @JsonIgnore
     private String password;
+
+    @JsonIgnore
     private boolean active = false;
+
+    @JsonIgnore
     private String activationToken;
+
     private String image;
 }

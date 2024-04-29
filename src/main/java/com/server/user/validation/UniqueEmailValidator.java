@@ -20,5 +20,4 @@ public class UniqueEmailValidator implements ConstraintValidator<UniqueEmail, St
         User user = userRepository.findByEmail(value);
         return user == null;
     }
-
 }

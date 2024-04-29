@@ -25,15 +25,16 @@ public class EmailService {
             """;
 
     private JavaMailSenderImpl mailSender;
-    private AuthProperties authProperties;
-    private MessageSource messageSource;
+
+    private final AuthProperties authProperties;
+
+    private final MessageSource messageSource;
 
     @Autowired
     public EmailService(AuthProperties authProperties, MessageSource messageSource) {
         this.authProperties = authProperties;
         this.messageSource = messageSource;
     }
-
 
     @PostConstruct
     public void initialize() {
@@ -49,7 +50,7 @@ public class EmailService {
     }
 
     public void sendActivationEmail(String email, String activationToken) {
-        var activationUrl = authProperties.getClient().host() + activationToken+"/active";
+        var activationUrl = authProperties.getClient().host() + activationToken + "/active";
         var title = messageSource.getMessage("auth.mail.user.created.title", null, LocaleContextHolder.getLocale());
         var clickHere = messageSource.getMessage("auth.mail.click.here", null, LocaleContextHolder.getLocale());
 

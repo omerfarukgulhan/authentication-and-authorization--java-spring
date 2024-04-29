@@ -19,7 +19,6 @@ public record UserCreate(
         @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$", message = "{auth.constraint.password.pattern}")
         String password
 ) {
-
     public User toUser() {
         User user = new User();
         user.setEmail(email);
@@ -27,5 +26,4 @@ public record UserCreate(
         user.setPassword(password);
         return user;
     }
-
 }
