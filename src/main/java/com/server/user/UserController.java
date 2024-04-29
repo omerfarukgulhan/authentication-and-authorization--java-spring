@@ -26,17 +26,17 @@ public class UserController {
     }
 
     @GetMapping
-    public Page<UserDTO> getUsers(Pageable page, @AuthenticationPrincipal CurrentUser currentUser){
+    public Page<UserDTO> getUsers(Pageable page, @AuthenticationPrincipal CurrentUser currentUser) {
         return userService.getUsers(page, currentUser).map(UserDTO::new);
     }
 
     @GetMapping("/{id}")
-    public UserDTO getUserById(@PathVariable long id){
+    public UserDTO getUserById(@PathVariable long id) {
         return new UserDTO(userService.getUser(id));
     }
 
     @PostMapping
-    public GenericMessage createUser(@Valid @RequestBody UserCreate user){
+    public GenericMessage createUser(@Valid @RequestBody UserCreate user) {
         userService.save(user.toUser());
         String message = Messages.getMessageForLocale("auth.create.user.success.message", LocaleContextHolder.getLocale());
         return new GenericMessage(message);
@@ -44,12 +44,12 @@ public class UserController {
 
     @PutMapping("/{id}")
     @PreAuthorize("#id == principal.id")
-    public UserDTO updateUser(@PathVariable long id, @Valid @RequestBody UserUpdate userUpdate){
+    UserDTO updateUser(@PathVariable long id, @Valid @RequestBody UserUpdate userUpdate) {
         return new UserDTO(userService.updateUser(id, userUpdate));
     }
 
     @PatchMapping("/{token}/active")
-    public GenericMessage activateUser(@PathVariable String token){
+    public GenericMessage activateUser(@PathVariable String token) {
         userService.activateUser(token);
         String message = Messages.getMessageForLocale("auth.activate.user.success.message", LocaleContextHolder.getLocale());
         return new GenericMessage(message);

@@ -7,6 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
@@ -16,6 +17,7 @@ public class AuthApplication {
     }
 
     @Bean
+    @Profile("dev")
     CommandLineRunner userCreator(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return (args) -> {
             for (var i = 1; i <= 25; i++) {

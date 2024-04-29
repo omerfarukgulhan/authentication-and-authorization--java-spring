@@ -1,13 +1,15 @@
 package com.server.user;
 
+import java.util.UUID;
+
 import com.server.config.CurrentUser;
 import com.server.email.EmailService;
+import com.server.file.FileService;
 import com.server.user.dto.UserUpdate;
 import com.server.user.exception.ActivationNotificationException;
 import com.server.user.exception.InvalidTokenException;
 import com.server.user.exception.NotFoundException;
 import com.server.user.exception.NotUniqueEmailException;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -15,8 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.mail.MailException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
+import jakarta.transaction.Transactional;
 
 @Service
 public class UserService {
@@ -26,18 +27,14 @@ public class UserService {
 
     private final EmailService emailService;
 
-    @Autowired
-    public UserService(EmailService emailService, PasswordEncoder passwordEncoder, UserRepository userRepository) {
-        this.emailService = emailService;
-        this.passwordEncoder = passwordEncoder;
-        this.userRepository = userRepository;
-    }
+    private final FileService fileService;
 
-    public Page<User> getUsers(Pageable page, CurrentUser currentUser) {
-        if (currentUser == null) {
-            return userRepository.findAll(page);
-        }
-        return userRepository.findByIdNot(currentUser.getId(), page);
+    @Autowired
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService, FileService fileService) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
+        this.fileService = fileService;
     }
 
     @Transactional(rollbackOn = MailException.class)
@@ -55,13 +52,20 @@ public class UserService {
     }
 
     public void activateUser(String token) {
-        User user = userRepository.findByActivationToken(token);
-        if (user == null) {
+        User inDB = userRepository.findByActivationToken(token);
+        if (inDB == null) {
             throw new InvalidTokenException();
         }
-        user.setActive(true);
-        user.setActivationToken(null);
-        userRepository.save(user);
+        inDB.setActive(true);
+        inDB.setActivationToken(null);
+        userRepository.save(inDB);
+    }
+
+    public Page<User> getUsers(Pageable page, CurrentUser currentUser) {
+        if (currentUser == null) {
+            return userRepository.findAll(page);
+        }
+        return userRepository.findByIdNot(currentUser.getId(), page);
     }
 
     public User getUser(long id) {
@@ -73,8 +77,14 @@ public class UserService {
     }
 
     public User updateUser(long id, UserUpdate userUpdate) {
-        User user = getUser(id);
-        user.setUsername(userUpdate.username());
-        return userRepository.save(user);
+        User inDB = getUser(id);
+        inDB.setUsername(userUpdate.username());
+        System.out.println(userUpdate.image());
+        if (userUpdate.image() != null) {
+            String fileName = fileService.saveBase64StringAsFile(userUpdate.image());
+            fileService.deleteProfileImage(inDB.getImage());
+            inDB.setImage(fileName);
+        }
+        return userRepository.save(inDB);
     }
 }

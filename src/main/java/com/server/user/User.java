@@ -29,5 +29,6 @@ public class User {
     @JsonIgnore
     private String activationToken;
 
+    @Lob
     private String image;
 }

@@ -12,9 +12,17 @@ public class AuthProperties {
 
     private Client client;
 
+    private Storage storage = new Storage();
+
     public record Email(String username, String password, String host, int port, String from) {
     }
 
     public record Client(String host) {
+    }
+
+    @Data
+    public static class Storage {
+        private String root = "uploads";
+        private String profile = "profile";
     }
 }
