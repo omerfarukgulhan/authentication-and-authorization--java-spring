@@ -14,10 +14,20 @@ public class AuthProperties {
 
     private Storage storage = new Storage();
 
-    public record Email(String username, String password, String host, int port, String from) {
+    private String tokenType;
+
+    public static record Email(
+            String username,
+            String password,
+            String host,
+            int port,
+            String from
+    ) {
     }
 
-    public record Client(String host) {
+    public static record Client(
+            String host
+    ) {
     }
 
     @Data
