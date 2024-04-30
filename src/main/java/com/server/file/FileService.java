@@ -6,7 +6,6 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.UUID;
 
@@ -46,7 +45,6 @@ public class FileService {
     }
 
     private byte[] decodedImage(String encodedImage) {
-        System.out.println(Arrays.toString(Base64.getDecoder().decode(encodedImage.split(",")[1])));
         return Base64.getDecoder().decode(encodedImage.split(",")[1]);
     }
 

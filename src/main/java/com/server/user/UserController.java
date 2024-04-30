@@ -1,9 +1,7 @@
 package com.server.user;
 
 import com.server.config.CurrentUser;
-import com.server.user.dto.UserCreate;
-import com.server.user.dto.UserDTO;
-import com.server.user.dto.UserUpdate;
+import com.server.user.dto.*;
 import com.server.utils.GenericMessage;
 import com.server.utils.Messages;
 import jakarta.validation.Valid;
@@ -53,5 +51,24 @@ public class UserController {
         userService.activateUser(token);
         String message = Messages.getMessageForLocale("auth.activate.user.success.message", LocaleContextHolder.getLocale());
         return new GenericMessage(message);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("#id == principal.id")
+    GenericMessage deleteUser(@PathVariable long id) {
+        userService.deleteUser(id);
+        return new GenericMessage("User is deleted");
+    }
+
+    @PostMapping("/password-reset")
+    GenericMessage passwordResetRequest(@Valid @RequestBody PasswordResetRequest passwordResetRequest) {
+        userService.handleResetRequest(passwordResetRequest);
+        return new GenericMessage("Check your email address to reset your password");
+    }
+
+    @PatchMapping("/{token}/password")
+    GenericMessage setPassword(@PathVariable String token, @Valid @RequestBody PasswordUpdate passwordUpdate) {
+        userService.updatePassword(token, passwordUpdate);
+        return new GenericMessage("Password updated successfully");
     }
 }

@@ -5,6 +5,8 @@ import java.util.UUID;
 import com.server.config.CurrentUser;
 import com.server.email.EmailService;
 import com.server.file.FileService;
+import com.server.user.dto.PasswordResetRequest;
+import com.server.user.dto.PasswordUpdate;
 import com.server.user.dto.UserUpdate;
 import com.server.user.exception.ActivationNotificationException;
 import com.server.user.exception.InvalidTokenException;
@@ -52,13 +54,13 @@ public class UserService {
     }
 
     public void activateUser(String token) {
-        User inDB = userRepository.findByActivationToken(token);
-        if (inDB == null) {
+        User user = userRepository.findByActivationToken(token);
+        if (user == null) {
             throw new InvalidTokenException();
         }
-        inDB.setActive(true);
-        inDB.setActivationToken(null);
-        userRepository.save(inDB);
+        user.setActive(true);
+        user.setActivationToken(null);
+        userRepository.save(user);
     }
 
     public Page<User> getUsers(Pageable page, CurrentUser currentUser) {
@@ -77,14 +79,41 @@ public class UserService {
     }
 
     public User updateUser(long id, UserUpdate userUpdate) {
-        User inDB = getUser(id);
-        inDB.setUsername(userUpdate.username());
+        User user = getUser(id);
+        user.setUsername(userUpdate.username());
         System.out.println(userUpdate.image());
         if (userUpdate.image() != null) {
             String fileName = fileService.saveBase64StringAsFile(userUpdate.image());
-            fileService.deleteProfileImage(inDB.getImage());
-            inDB.setImage(fileName);
+            fileService.deleteProfileImage(user.getImage());
+            user.setImage(fileName);
         }
-        return userRepository.save(inDB);
+        return userRepository.save(user);
+    }
+
+    public void deleteUser(long id) {
+        User user = getUser(id);
+        if (user.getImage() != null) {
+            fileService.deleteProfileImage(user.getImage());
+        }
+        userRepository.delete(user);
+    }
+
+    public void handleResetRequest(PasswordResetRequest passwordResetRequest) {
+        User user = findByEmail(passwordResetRequest.email());
+        if (user == null) throw new NotFoundException(0);
+        user.setPasswordResetToken(UUID.randomUUID().toString());
+        this.userRepository.save(user);
+        this.emailService.sendPasswordResetEmail(user.getEmail(), user.getPasswordResetToken());
+    }
+
+    public void updatePassword(String token, PasswordUpdate passwordUpdate) {
+        User user = userRepository.findByPasswordResetToken(token);
+        if (user == null) {
+            throw new InvalidTokenException();
+        }
+        user.setPasswordResetToken(null);
+        user.setPassword(passwordEncoder.encode(passwordUpdate.password()));
+        user.setActive(true);
+        userRepository.save(user);
     }
 }

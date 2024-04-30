@@ -31,4 +31,6 @@ public class User {
 
     @Lob
     private String image;
+
+    private String passwordResetToken;
 }
