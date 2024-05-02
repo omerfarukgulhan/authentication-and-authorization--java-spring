@@ -33,4 +33,7 @@ public class User {
     private String image;
 
     private String passwordResetToken;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 }
